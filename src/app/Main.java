@@ -66,7 +66,8 @@ public class Main extends SimpleApplication {
         rootNode.attachChild(landscape);
         
         ActionListener actionListener = new ActionListener() {
-
+            
+            @Override
             public void onAction(String name, boolean keyPressed, float tpf) {
                 
                 if (name.equals("Click")) {
@@ -83,7 +84,7 @@ public class Main extends SimpleApplication {
                     landscape.collideWith(ray, results);
                     
                     if (results.size() > 0) {
-                        CollisionResult c = results.getClosestCollision();
+                        CollisionResult c = results.getFarthestCollision();
                         player.moveTowardsTarget(c.getContactPoint());
                     }
                 }
@@ -93,13 +94,13 @@ public class Main extends SimpleApplication {
         inputManager.addMapping("Click", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addListener(actionListener, "Click");
         
-        player = new Player(new Vector3f(0, 0, 0), assetManager.loadModel("Models/char01.j3o"));
+        player = new Player(new Vector3f(0, 0, 0), assetManager.loadModel("Models/warrior01.j3o"));
         
         flyCam.setMoveSpeed(0);
         flyCam.setRotationSpeed(0);
         flyCam.setEnabled(false);
         
-        cam.setLocation(player.getPostion().add(12, 16, 12));
+        cam.setLocation(player.getPostion().add(0, 16, 14));
         cam.lookAt(player.getPostion().add(0, 0, 0), new Vector3f(0, 1, 0));
         
         rootNode.attachChild(player.getNode());
@@ -120,7 +121,7 @@ public class Main extends SimpleApplication {
     public void simpleUpdate(float tpf) {
         player.moveUpdate(tpf);
         
-        cam.setLocation(player.getPostion().add(12, 16, 12));
+        cam.setLocation(player.getPostion().add(0, 16, 14));
         cam.lookAt(player.getPostion().add(0, 0, 0), new Vector3f(0, 1, 0));
     }
 
