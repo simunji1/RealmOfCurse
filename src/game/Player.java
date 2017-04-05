@@ -14,15 +14,19 @@ import com.jme3.scene.Spatial;
  * @author dz3jr
  */
 public class Player implements IngameCharacter {
-    private Vector3f position;
     private final Spatial shape;
+    
+    private Vector3f position;
+    private Vector3f moveTarget;
     private Node node;
 
     public Player(Vector3f position, Spatial shape) {
         this.position = position;
-        node = new Node("player");
-        
+        moveTarget = position;
         this.shape = shape;
+       
+        node = new Node("player");
+        node.attachChild(shape);
     }
     
     @Override
@@ -48,5 +52,28 @@ public class Player implements IngameCharacter {
     @Override
     public void setNode(Node node) {
         this.node = node;
+    }
+    
+    public void moveTowardsTarget(Vector3f moveTarget) {
+        this.moveTarget = moveTarget;
+    }
+    
+    public void moveUpdate(float tpf) {
+        float move = tpf*5.f;
+        float distance = position.distance(moveTarget);
+        
+        Vector3f vector;
+        if (distance > 0.05f && !node.getWorldTranslation().equals(moveTarget)){
+            vector = position.interpolateLocal(moveTarget, move/distance);
+            node.lookAt(moveTarget, Vector3f.UNIT_Y);
+            node.setLocalTranslation(vector);
+        }
+      
+        else {
+           
+            if (distance <= 0.02f && !node.getWorldTranslation().equals(moveTarget))
+                node.setLocalTranslation(moveTarget);
+        }
+        position = node.getWorldTranslation();
     }
 }

@@ -1,11 +1,18 @@
 package app;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.collision.CollisionResults;
+import com.jme3.collision.CollisionResult;
 import com.jme3.export.binary.BinaryImporter;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Ray;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
@@ -30,6 +37,9 @@ import sun.security.acl.WorldGroupImpl;
  */
 public class Main extends SimpleApplication {
 
+    Node landscape;
+    Player player;
+    
     public static void main(String[] args) {
         Main app = new Main();
         
@@ -46,21 +56,54 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
-        //this.flyCam.setEnabled(true);
+        
+        //landscape
+        landscape = new Node();
+        
+        Spatial landscapeShape = assetManager.loadModel("Scenes/newScene.j3o");
+        landscape.attachChild(landscapeShape);
+        
+        rootNode.attachChild(landscape);
+        
+        ActionListener actionListener = new ActionListener() {
+
+            public void onAction(String name, boolean keyPressed, float tpf) {
                 
-        //Spatial landscape = assetManager.loadModel("Models/landscape001.blend");
+                if (name.equals("Click")) {
+                    // 1. Reset results list.
+                    CollisionResults results = new CollisionResults();
+                    
+                    // 2. Aim the ray from mouse pointer.
+                    Vector2f click2d = inputManager.getCursorPosition();
+                    Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
+                    Vector3f dir = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
+                    Ray ray = new Ray(click3d, dir);
+                    
+                    // 3. Collect intersections between Ray and Shootables in results list.
+                    rootNode.collideWith(ray, results);
+                    
+                    if (results.size() > 0) {
+                        CollisionResult c = results.getClosestCollision();
+                        player.moveTowardsTarget(c.getContactPoint());
+                    }
+                }
+            }
+        };
         
-        Player player = new Player(new Vector3f(0, 0, 0), assetManager.loadModel("Models/char01.j3o"));
+        inputManager.addMapping("Click", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addListener(actionListener, "Click");
         
-        getCamera().setLocation(player.getPostion().add(15, 16, 15));
-        getCamera().lookAt(player.getPostion().add(0, 1, 0), new Vector3f(0, 1, 0));
+        player = new Player(new Vector3f(0, 0, 0), assetManager.loadModel("Models/char01.j3o"));
         
-        rootNode.attachChild(player.getShape());
+        flyCam.setMoveSpeed(0);
+        flyCam.setRotationSpeed(0);
+        flyCam.setEnabled(false);
         
-        Spatial landscape = assetManager.loadModel("Scenes/newScene.j3o");
+        cam.setLocation(player.getPostion().add(12, 16, 12));
+        cam.lookAt(player.getPostion().add(0, 1, 0), new Vector3f(0, 1, 0));
         
-        //landscape.setLocalTranslation(0, -10, 0);
-        
+        rootNode.attachChild(player.getNode());
+                
         /** A white, directional light source */ 
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection((new Vector3f(-0.5f, -0.5f, -0.8f)).normalizeLocal());
@@ -71,27 +114,11 @@ public class Main extends SimpleApplication {
         AmbientLight ambient = new AmbientLight();
         ambient.setColor(new ColorRGBA(0.33f, 0.33f, 0.33f,1f));
         rootNode.addLight(ambient); 
-
-        rootNode.attachChild(landscape);
-        
-        /** Load a Node from a .j3o file */
-        /*String userHome = System.getProperty("user.home");
-        BinaryImporter importer = BinaryImporter.getInstance();
-        importer.setAssetManager(assetManager);
-        File file = new File(userHome+"Scenes/newScene.j3o");
-        try {
-            Node loadedNode = (Node)importer.load(file);
-          loadedNode.setName("loaded node");
-          rootNode.attachChild(loadedNode);
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "No saved node loaded.", ex);
-        } */
-
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-        //TODO: add update code
+        player.moveUpdate(tpf);
     }
 
     @Override
