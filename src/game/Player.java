@@ -56,6 +56,7 @@ public class Player implements IngameCharacter {
     
     public void moveTowardsTarget(Vector3f moveTarget) {
         this.moveTarget = moveTarget;
+        node.lookAt(moveTarget, Vector3f.UNIT_Y);
     }
     
     public void moveUpdate(float tpf) {
@@ -65,15 +66,9 @@ public class Player implements IngameCharacter {
         Vector3f vector;
         if (distance > 0.05f && !node.getWorldTranslation().equals(moveTarget)){
             vector = position.interpolateLocal(moveTarget, move/distance);
-            node.lookAt(moveTarget, Vector3f.UNIT_Y);
             node.setLocalTranslation(vector);
         }
       
-        else {
-           
-            if (distance <= 0.02f && !node.getWorldTranslation().equals(moveTarget))
-                node.setLocalTranslation(moveTarget);
-        }
         position = node.getWorldTranslation();
     }
 }

@@ -80,7 +80,7 @@ public class Main extends SimpleApplication {
                     Ray ray = new Ray(click3d, dir);
                     
                     // 3. Collect intersections between Ray and Shootables in results list.
-                    rootNode.collideWith(ray, results);
+                    landscape.collideWith(ray, results);
                     
                     if (results.size() > 0) {
                         CollisionResult c = results.getClosestCollision();
@@ -100,7 +100,7 @@ public class Main extends SimpleApplication {
         flyCam.setEnabled(false);
         
         cam.setLocation(player.getPostion().add(12, 16, 12));
-        cam.lookAt(player.getPostion().add(0, 1, 0), new Vector3f(0, 1, 0));
+        cam.lookAt(player.getPostion().add(0, 0, 0), new Vector3f(0, 1, 0));
         
         rootNode.attachChild(player.getNode());
                 
@@ -119,6 +119,9 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         player.moveUpdate(tpf);
+        
+        cam.setLocation(player.getPostion().add(12, 16, 12));
+        cam.lookAt(player.getPostion().add(0, 0, 0), new Vector3f(0, 1, 0));
     }
 
     @Override
