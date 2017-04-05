@@ -6,6 +6,7 @@
 package game;
 
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
 /**
@@ -14,10 +15,12 @@ import com.jme3.scene.Spatial;
  */
 public class Player implements IngameCharacter {
     private Vector3f position;
-    private Spatial shape;
+    private final Spatial shape;
+    private Node node;
 
     public Player(Vector3f position, Spatial shape) {
         this.position = position;
+        node = new Node("player");
         
         this.shape = shape;
     }
@@ -36,5 +39,14 @@ public class Player implements IngameCharacter {
     public Spatial getShape() {
         return shape;
     }
-    
+
+    @Override
+    public Node getNode() {
+        return node;
+    }
+
+    @Override
+    public void setNode(Node node) {
+        this.node = node;
+    }
 }
