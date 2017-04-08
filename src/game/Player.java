@@ -18,14 +18,12 @@ import controls.CharacterMovementControl;
  *
  * @author dz3jr
  */
-public class Player implements IngameCharacter, AnimEventListener {
+public class Player implements IngameCharacter {
     private final Spatial shape;
     
     //private Vector3f position;
     private Node node;
     private CharacterMovementControl mc;
-    private AnimControl control;
-    private AnimChannel channel;
 
     public Player(Vector3f position, Spatial shape, Node landscape) {
         //this.position = position;
@@ -39,6 +37,7 @@ public class Player implements IngameCharacter, AnimEventListener {
         //node.addControl(new TerrainHeightControl(landscape));
         mc = new CharacterMovementControl(landscape);
         node.addControl(mc);
+        mc.initAnimations();
     }
     
     @Override
@@ -68,27 +67,5 @@ public class Player implements IngameCharacter, AnimEventListener {
     
     public void moveTowardsTarget(Vector3f moveTarget) {
         mc.moveTowardsTarget(moveTarget);
-        /*channel.setAnim("Walk");
-        channel.setLoopMode(LoopMode.Loop);*/
-    }
-    
-    public void initAnimations() {
-        control = shape.getControl(AnimControl.class);
-        control.addListener(this);
-        channel = control.createChannel();
-        channel.setAnim("Stand");
-        channel.setLoopMode(LoopMode.Loop);
-    }
-
-    @Override
-    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        if (!mc.isMoving()) {
-            channel.setAnim("Stand");
-        }
-    }
-
-    @Override
-    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

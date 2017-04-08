@@ -8,6 +8,7 @@ package controls;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
+import com.jme3.animation.LoopMode;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
@@ -19,8 +20,10 @@ import com.jme3.scene.Node;
  *
  * @author dz3jr
  */
-public class CharacterMovementControl extends BasicControl {
+public class CharacterMovementControl extends BasicControl implements AnimEventListener {
     private Vector3f moveTarget;
+    private AnimControl control;
+    private AnimChannel channel;
     
     private final Ray ray;
     private final Vector3f up;
@@ -39,6 +42,7 @@ public class CharacterMovementControl extends BasicControl {
         this.moveTarget = moveTarget;
         Vector3f lookVector = new Vector3f(moveTarget.getX(), spatial.getWorldTranslation().getY(), moveTarget.getZ());
         spatial.lookAt(lookVector, Vector3f.UNIT_Y);
+        setAnim("Walk");
     }
 
     @Override
@@ -72,9 +76,40 @@ public class CharacterMovementControl extends BasicControl {
             
             spatial.setLocalTranslation(v1);
         }
+        
+        if (!isMoving()) {
+            setAnim("Stand");
+        }
     }
     
     public boolean isMoving() {
-        return !(moveTarget == spatial.getWorldTranslation());
+        return spatial.getWorldTranslation().distance(moveTarget) > 0.05f;
+    }
+    
+    public void setAnim(String name) {
+        if ("Walk".equals(name) || "Stand".equals(name)) {
+            if (channel.getAnimationName() != null && channel.getAnimationName().equals(name))
+                return;
+            channel.setAnim(name);
+            channel.setLoopMode(LoopMode.Loop);
+        }
+    }
+    
+    public void initAnimations() {
+        Node n = (Node)spatial;
+        control = n.getChild("Bandit1").getControl(AnimControl.class);
+        control.addListener(this);
+        channel = control.createChannel();
+        setAnim("Stand");
+    }
+
+    @Override
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        
+    }
+
+    @Override
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+        
     }
 }

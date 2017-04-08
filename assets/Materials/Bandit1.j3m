@@ -1,6 +1,6 @@
 Material My Material : Common/MatDefs/Light/Lighting.j3md {
      MaterialParameters {
-        DiffuseMap : Textures/Bandit.png
+        DiffuseMap : Flip Textures/Bandit.png
      }
     AdditionalRenderState {
     }
