@@ -15,7 +15,7 @@ import com.jme3.scene.Spatial;
  */
 public interface IngameCharacter {
     
-    Vector3f getPostion();
+    Vector3f getPosition();
     
     void setPosition(float x, float y, float z);
     
