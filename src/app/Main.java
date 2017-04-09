@@ -12,6 +12,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -47,7 +48,7 @@ public class Main extends SimpleApplication {
         
         //landscape
         landscape = new Node();
-        Spatial landscapeShape = assetManager.loadModel("Scenes/newScene.j3o");
+        Spatial landscapeShape = assetManager.loadModel("Scenes/villageOutskirts.j3o");
         landscape.attachChild(landscapeShape);
         
         rootNode.attachChild(landscape);
@@ -85,7 +86,6 @@ public class Main extends SimpleApplication {
         playerSpatial.setMaterial(assetManager.loadMaterial("Materials/Bandit1.j3m"));
         
         player = new Player(new Vector3f(0, 0, 0), playerSpatial, landscape);
-        //player.initAnimations();
         
         flyCam.setMoveSpeed(0);
         flyCam.setRotationSpeed(0);
@@ -96,6 +96,9 @@ public class Main extends SimpleApplication {
         
         rootNode.attachChild(player.getNode());
                 
+        FilterPostProcessor water = assetManager.loadFilter("Scenes/water.j3f");
+        viewPort.addProcessor(water);
+        
         /** A white, directional light source */ 
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection((new Vector3f(-0.5f, -0.5f, -0.8f)).normalizeLocal());

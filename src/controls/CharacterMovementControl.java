@@ -70,6 +70,12 @@ public class CharacterMovementControl extends BasicControl implements AnimEventL
                     
                     CollisionResult result = cr.getClosestCollision();
                     Vector3f vec = result.getContactPoint();
+                    
+                    if (vec.getY() < -2) {
+                        moveTarget = initialPosition;
+                        return;
+                    }
+                    
                     v1.setY(vec.getY());
                 }
             }
