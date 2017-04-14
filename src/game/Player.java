@@ -10,6 +10,7 @@ import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import controls.CharacterMovementControl;
@@ -29,6 +30,7 @@ public class Player implements IngameCharacter {
         //this.position = position;
         //moveTarget = position;
         this.shape = shape;
+        shape.setShadowMode(RenderQueue.ShadowMode.Cast);
         
         node = new Node("player");
         node.setLocalTranslation(position);

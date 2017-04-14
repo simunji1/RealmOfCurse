@@ -16,6 +16,9 @@ import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.shadow.DirectionalLightShadowFilter;
+import com.jme3.shadow.DirectionalLightShadowRenderer;
+import com.jme3.shadow.EdgeFilteringMode;
 import com.jme3.system.AppSettings;
 import game.Player;
 
@@ -105,10 +108,18 @@ public class Main extends SimpleApplication {
         sun.setColor(ColorRGBA.White);
         rootNode.addLight(sun);
         
+        DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, 1024, 3);
+        dlsr.setLight(sun);
+        dlsr.setLambda(0.55f);
+        dlsr.setShadowIntensity(0.4f);
+        dlsr.setEdgeFilteringMode(EdgeFilteringMode.Bilinear);
+        viewPort.addProcessor(dlsr);
+        
         /** A white ambient light source. */ 
         AmbientLight ambient = new AmbientLight();
         ambient.setColor(new ColorRGBA(0.33f, 0.33f, 0.33f,1f));
         rootNode.addLight(ambient);
+        
     }
 
     @Override
