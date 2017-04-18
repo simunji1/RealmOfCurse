@@ -13,7 +13,9 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.ssao.SSAOFilter;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.shadow.DirectionalLightShadowFilter;
@@ -53,6 +55,7 @@ public class Main extends SimpleApplication {
         landscape = new Node();
         Spatial landscapeShape = assetManager.loadModel("Scenes/villageOutskirts.j3o");
         landscape.attachChild(landscapeShape);
+        landscape.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
         
         rootNode.attachChild(landscape);
         
@@ -99,27 +102,37 @@ public class Main extends SimpleApplication {
         
         rootNode.attachChild(player.getNode());
                 
-        FilterPostProcessor water = assetManager.loadFilter("Scenes/water.j3f");
-        viewPort.addProcessor(water);
-        
-        /** A white, directional light source */ 
         DirectionalLight sun = new DirectionalLight();
-        sun.setDirection((new Vector3f(-0.5f, -0.5f, -0.8f)).normalizeLocal());
-        sun.setColor(ColorRGBA.White);
+        sun.setDirection((new Vector3f(-0.2f, -0.5f, -0.5f)).normalizeLocal());
+        sun.setColor(ColorRGBA.White.mult(.6f));
         rootNode.addLight(sun);
         
-        DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, 1024, 3);
+        AmbientLight ambient = new AmbientLight();
+        ambient.setColor(new ColorRGBA(.7f, .7f, .7f, 1f));
+        rootNode.addLight(ambient);
+        
+        FilterPostProcessor fpp = assetManager.loadFilter("Scenes/water.j3f");//new FilterPostProcessor(assetManager);
+        
+        DirectionalLightShadowFilter dlsf = new DirectionalLightShadowFilter(assetManager, 4096, 2);
+        dlsf.setLight(sun);
+        dlsf.setShadowIntensity(0.5f);
+        dlsf.setEdgeFilteringMode(EdgeFilteringMode.PCF4);
+        //fpp.addFilter(dlsf);
+        
+        SSAOFilter ssaoFilter = new SSAOFilter(1.294f, 10f, 0.33f, 0.61f);
+        //fpp.addFilter(ssaoFilter);
+        
+        viewPort.addProcessor(fpp); 
+
+        //FilterPostProcessor water = assetManager.loadFilter("Scenes/water.j3f");
+        //viewPort.addProcessor(water);
+        
+        /*DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, 1024, 3);
         dlsr.setLight(sun);
         dlsr.setLambda(0.55f);
         dlsr.setShadowIntensity(0.4f);
         dlsr.setEdgeFilteringMode(EdgeFilteringMode.Bilinear);
-        viewPort.addProcessor(dlsr);
-        
-        /** A white ambient light source. */ 
-        AmbientLight ambient = new AmbientLight();
-        ambient.setColor(new ColorRGBA(0.33f, 0.33f, 0.33f,1f));
-        rootNode.addLight(ambient);
-        
+        viewPort.addProcessor(dlsr);*/
     }
 
     @Override
