@@ -1,6 +1,7 @@
 Material My Material : Common/MatDefs/Light/Lighting.j3md {
      MaterialParameters {
         DiffuseMap : Flip Textures/Props/AshenTree.png
+        AlphaDiscardThreshold : 0.70000005
      }
     AdditionalRenderState {
       Blend Alpha

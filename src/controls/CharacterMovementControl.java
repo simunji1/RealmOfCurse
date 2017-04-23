@@ -9,12 +9,24 @@ import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
+import com.jme3.bounding.BoundingVolume;
+import com.jme3.collision.Collidable;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
+import com.jme3.collision.UnsupportedCollisionException;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Matrix4f;
 import com.jme3.math.Ray;
+import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-
+import com.jme3.scene.SceneGraphVisitor;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Sphere;
+import java.util.Queue;
 
 /**
  *
@@ -24,6 +36,7 @@ public class CharacterMovementControl extends BasicControl implements AnimEventL
     private Vector3f moveTarget;
     private AnimControl control;
     private AnimChannel channel;
+    private Spatial collisionShape;
     
     private final Ray ray;
     private final Vector3f up;
@@ -36,6 +49,8 @@ public class CharacterMovementControl extends BasicControl implements AnimEventL
         ray = new Ray(Vector3f.ZERO.clone(), new Vector3f(0, -3, 0));
         up = new Vector3f(0, 50, 0);
         cr = new CollisionResults();
+        Sphere collisionSphere = new Sphere(10, 10, 0.75f);
+        collisionShape = new Geometry("collisionSphere", collisionSphere);
     }
     
     public void moveTowardsTarget(Vector3f moveTarget) {
@@ -65,7 +80,7 @@ public class CharacterMovementControl extends BasicControl implements AnimEventL
                 if (cr.size() > 0) {
                     if (cr.size() > 1) {
                         moveTarget = initialPosition;
-                        return;
+                        return; 
                     }
                     
                     CollisionResult result = cr.getClosestCollision();

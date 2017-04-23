@@ -19,7 +19,6 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.shadow.DirectionalLightShadowFilter;
-import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
 import com.jme3.system.AppSettings;
 import game.Player;
@@ -75,7 +74,8 @@ public class Main extends SimpleApplication {
                     Ray ray = new Ray(click3d, dir);
                     
                     // 3. Collect intersections between Ray and Shootables in results list.
-                    landscape.collideWith(ray, results);
+                    Spatial land = landscape.getChild("LAND");
+                    land.collideWith(ray, results);
                     
                     if (results.size() > 0) {
                         CollisionResult c = results.getFarthestCollision();
@@ -117,7 +117,7 @@ public class Main extends SimpleApplication {
         dlsf.setLight(sun);
         dlsf.setShadowIntensity(0.5f);
         dlsf.setEdgeFilteringMode(EdgeFilteringMode.PCF4);
-        //fpp.addFilter(dlsf);
+        fpp.addFilter(dlsf);
         
         SSAOFilter ssaoFilter = new SSAOFilter(1.294f, 10f, 0.33f, 0.61f);
         //fpp.addFilter(ssaoFilter);
