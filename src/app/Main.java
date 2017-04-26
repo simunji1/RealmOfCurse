@@ -41,7 +41,7 @@ public class Main extends SimpleApplication {
         appSettings.put("Width", 1280);
         appSettings.put("Height", 720);
         appSettings.put("Title", "Realm Of Curse");
-        appSettings.setFrameRate(60);
+        //appSettings.setFrameRate(60);
         
         app.setSettings(appSettings);
         app.start();
