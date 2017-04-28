@@ -9,24 +9,17 @@ import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
-import com.jme3.bounding.BoundingVolume;
-import com.jme3.collision.Collidable;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
-import com.jme3.collision.UnsupportedCollisionException;
-import com.jme3.material.Material;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.Light;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Matrix4f;
 import com.jme3.math.Ray;
-import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
-import java.util.Queue;
 
 /**
  *
@@ -37,11 +30,14 @@ public class CharacterMovementControl extends BasicControl implements AnimEventL
     private AnimControl control;
     private AnimChannel channel;
     private Spatial collisionShape;
+    private Node npcTarget;
+    private boolean movingTowardsNpc;
     
     private final Ray ray;
     private final Vector3f up;
     private final CollisionResults cr;
     private final Node terrain;
+    private final Light npcHighlight;
     
     public CharacterMovementControl(Node terrain) {
         this.terrain = terrain;
@@ -51,6 +47,8 @@ public class CharacterMovementControl extends BasicControl implements AnimEventL
         cr = new CollisionResults();
         Sphere collisionSphere = new Sphere(10, 10, 0.75f);
         collisionShape = new Geometry("collisionSphere", collisionSphere);
+        movingTowardsNpc = false;
+        npcHighlight = new AmbientLight(ColorRGBA.White);
     }
     
     public void moveTowardsTarget(Vector3f moveTarget) {
@@ -59,13 +57,34 @@ public class CharacterMovementControl extends BasicControl implements AnimEventL
         spatial.lookAt(lookVector, Vector3f.UNIT_Y);
         setAnim("Walk");
     }
-
+    
+    public void moveTowardsNpc(Node npc) {
+        if (npcTarget != null) {
+            clearNpcTarget();
+        }
+        npcTarget = npc;
+        npcTarget.addLight(npcHighlight);
+        movingTowardsNpc = true;
+        moveTowardsTarget(npcTarget.getWorldTranslation());
+    }
+    
+    public void clearNpcTarget() {
+        moveTarget = spatial.getLocalTranslation();
+        npcTarget.removeLight(npcHighlight);
+        npcTarget = null;
+    }
+    
     @Override
     protected void controlUpdate(float tpf) {
         float move = tpf*5.f;
         float distance = spatial.getWorldTranslation().distance(moveTarget);
         Vector3f v1, initialPosition;
         initialPosition = spatial.getLocalTranslation();
+        
+        if (movingTowardsNpc && distance < 3 && npcTarget != null) {
+            clearNpcTarget();
+            return;
+        }
         
         if (distance > 0.05f && !spatial.getWorldTranslation().equals(moveTarget)){
             v1 = spatial.getWorldTranslation().interpolateLocal(moveTarget, move/distance);

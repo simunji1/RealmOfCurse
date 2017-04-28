@@ -1,0 +1,9 @@
+Material My Material : Common/MatDefs/Light/Lighting.j3md {
+     MaterialParameters {
+        DiffuseMap : Flip Textures/Chars/BeastMaster.png
+        AlphaDiscardThreshold : 0.0
+     }
+    AdditionalRenderState {
+        Blend Off
+    }
+}
